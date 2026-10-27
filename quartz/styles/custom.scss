@@ -1,3 +1,225 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// ==============================================================================
+// ⚛️ QUARTZ V5 DUAL-MODE CHEMISTRY & ORBITAL GRAPH STYLES
+// ==============================================================================
+
+.chemistry-widget-container {
+  margin: 1.5rem 0 2rem 0;
+  padding: 1.25rem;
+  background: var(--lightgray);
+  border: 1px solid var(--gray);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+
+  .chem-widget-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--gray);
+    margin-bottom: 1rem;
+
+    .chem-widget-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .chem-badge {
+        font-size: 0.75rem;
+        font-family: var(--codeFont);
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        background: var(--secondary);
+        color: var(--light);
+        border-radius: 6px;
+      }
+
+      .chem-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--dark);
+      }
+    }
+
+    .chem-toggle-group {
+      display: flex;
+      background: var(--light);
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--gray);
+      gap: 0.25rem;
+
+      .chem-toggle-btn {
+        background: transparent;
+        border: none;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 6px;
+        color: var(--darkgray);
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: var(--secondary);
+        }
+
+        &.active {
+          background: var(--secondary);
+          color: var(--light);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
+  }
+
+  .chem-widget-body {
+    .chem-view-ilmiah,
+    .chem-view-konteks {
+      display: none;
+
+      &.active {
+        display: block;
+        animation: chem-fadein 0.3s ease;
+      }
+    }
+  }
+
+  // Orbital Diagram Styles
+  .chem-orbital-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+    gap: 1.5rem;
+
+    .chem-orbital-svg {
+      max-width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 12px rgba(45, 212, 191, 0.2));
+
+      .chem-orbit-ring {
+        fill: none;
+        stroke: var(--gray);
+        stroke-width: 1.25;
+        stroke-dasharray: 4, 3;
+        opacity: 0.85;
+      }
+
+      .chem-shell-label {
+        font-size: 10px;
+        fill: var(--darkgray);
+        font-family: var(--codeFont);
+      }
+
+      .chem-nucleus {
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+
+      .chem-nucleus-text {
+        font-size: 15px;
+        font-weight: bold;
+        fill: #ffffff;
+        text-anchor: middle;
+        font-family: var(--headerFont);
+      }
+    }
+
+    .chem-meta-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: var(--light);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--gray);
+      min-width: 220px;
+
+      .chem-meta-item {
+        font-size: 0.85rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+
+        span {
+          color: var(--darkgray);
+        }
+
+        strong {
+          color: var(--dark);
+          font-family: var(--codeFont);
+        }
+      }
+    }
+  }
+
+  // Context Network Cards
+  .chem-context-network {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 0;
+
+    .chem-context-card {
+      background: var(--light);
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--gray);
+      max-width: 200px;
+      text-align: center;
+
+      .chem-context-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--secondary);
+        font-family: var(--codeFont);
+        margin-bottom: 0.25rem;
+      }
+
+      h4 {
+        margin: 0.25rem 0;
+        font-size: 0.95rem;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.75rem;
+        color: var(--darkgray);
+      }
+    }
+
+    .chem-context-arrow {
+      color: var(--secondary);
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@keyframes chem-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes chem-fadein {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

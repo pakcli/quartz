@@ -261,6 +261,21 @@ export async function loadQuartzConfig(
     ...configOverrides,
   }
 
+  // Dynamic build-time theme string resolution (compatible with quartz.config.yaml & CI env)
+  const envTheme = process.env.QUARTZ_THEME
+  if (envTheme && configuration.theme?.colors) {
+    if (envTheme === "cyber-matrix") {
+      configuration.theme.colors.lightMode = { ...configuration.theme.colors.lightMode, secondary: "#00cc55", tertiary: "#009944" }
+      configuration.theme.colors.darkMode = { ...configuration.theme.colors.darkMode, secondary: "#00ff66", tertiary: "#00cc55" }
+    } else if (envTheme === "ocean-blue") {
+      configuration.theme.colors.lightMode = { ...configuration.theme.colors.lightMode, secondary: "#0284c7", tertiary: "#38bdf8" }
+      configuration.theme.colors.darkMode = { ...configuration.theme.colors.darkMode, secondary: "#38bdf8", tertiary: "#0284c7" }
+    } else if (envTheme === "emerald-science") {
+      configuration.theme.colors.lightMode = { ...configuration.theme.colors.lightMode, secondary: "#059669", tertiary: "#10b981" }
+      configuration.theme.colors.darkMode = { ...configuration.theme.colors.darkMode, secondary: "#10b981", tertiary: "#059669" }
+    }
+  }
+
   const enabledEntries = json.plugins.filter((e) => e.enabled)
   const manifests = new Map<string, PluginManifest>()
 
