@@ -8,6 +8,8 @@ import spaRouterScript from "../../components/scripts/spa.inline"
 import popoverScript from "../../components/scripts/popover.inline"
 // @ts-ignore
 import chemistryGraphScript from "../../components/scripts/chemistryGraph.inline"
+// @ts-ignore
+import shareActionsScript from "../../components/scripts/shareActions.inline"
 import baseStyles from "../../styles/base.scss"
 import customStyles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
@@ -95,6 +97,11 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   // chemistry & orbital diagram client script (declaratively enabled via enableChemistryGraph)
   if (cfg.enableChemistryGraph !== false) {
     componentResources.afterDOMLoaded.push(chemistryGraphScript)
+  }
+
+  // share, markdown copy & A4 PDF print toolbar (declaratively enabled via enableShareActions)
+  if (cfg.enableShareActions) {
+    componentResources.afterDOMLoaded.push(shareActionsScript)
   }
 
   // displayMode enforcement (darkOnly / lightOnly / both)

@@ -7,7 +7,7 @@ import { Root as HTMLRoot } from "hast"
 import { MarkdownContent, ProcessedContent } from "../plugins/vfile"
 import { PerfTimer } from "../util/perf"
 import { read } from "to-vfile"
-import { FilePath, QUARTZ, slugifyFilePath } from "../util/path"
+import { FilePath, QUARTZ, resolveFileSlug, slugifyFilePath } from "../util/path"
 import path from "path"
 import workerpool, { Promise as WorkerPromise } from "workerpool"
 import { QuartzLogger } from "../util/log"
@@ -102,7 +102,21 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
         // base data properties that plugins may use
         file.data.filePath = file.path as FilePath
         file.data.relativePath = path.posix.relative(argv.directory, file.path) as FilePath
-        file.data.slug = slugifyFilePath(file.data.relativePath)
+        file.data.slug = resolveFileSlug(file.data.relativePath, ctx.allFiles ?? [])
+
+        // If a README was promoted to an index, register "readme" as alias so wikilinks stay unbroken
+        if (
+          path.posix.basename(file.data.relativePath).toLowerCase() === "readme.md" &&
+          file.data.slug.endsWith("index")
+        ) {
+          const frontmatter = (file.data.frontmatter ?? {}) as Record<string, unknown>
+          const aliases = Array.isArray(frontmatter.aliases) ? [...frontmatter.aliases] : []
+          if (!aliases.includes("readme") && !aliases.includes("README")) {
+            aliases.push("readme", "README")
+            frontmatter.aliases = aliases
+            file.data.frontmatter = frontmatter
+          }
+        }
 
         const ast = processor.parse(file)
         const newAst = await processor.run(ast, file)
@@ -120,12 +134,42 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
   }
 }
 
+function getMdastNodeText(node: unknown): string {
+  if (!node || typeof node !== "object") return ""
+  const n = node as Record<string, unknown>
+  if (typeof n.value === "string") return n.value
+  if (Array.isArray(n.children)) {
+    return n.children.map(getMdastNodeText).join("")
+  }
+  return ""
+}
+
 export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]) {
   return async (processor: QuartzHtmlProcessor) => {
     const res: ProcessedContent[] = []
     for (const [ast, file] of mdContent) {
       try {
         const perf = new PerfTimer()
+
+        // Suppress repetitive duplication if title text == first line heading exact case
+        const titleText = (file.data.frontmatter?.title ?? file.data.title) as string | undefined
+        if (typeof titleText === "string" && titleText.trim() !== "") {
+          const expectedTitle = titleText.trim()
+          const children = (ast as Record<string, unknown>).children
+          if (Array.isArray(children)) {
+            const firstHeadingIdx = children.findIndex(
+              (node) => (node as Record<string, unknown>).type === "heading",
+            )
+            if (firstHeadingIdx !== -1) {
+              const firstHeading = children[firstHeadingIdx]
+              const headingText = getMdastNodeText(firstHeading).trim()
+              // Strict exact case match
+              if (headingText === expectedTitle) {
+                children.splice(firstHeadingIdx, 1)
+              }
+            }
+          }
+        }
 
         const newAst = await processor.run(ast as MDRoot, file)
         res.push([newAst, file])

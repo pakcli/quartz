@@ -1,3 +1,6 @@
+import type { FilePath, FullSlug } from "@quartz-community/utils"
+import { slugifyFilePath } from "@quartz-community/utils"
+
 // Re-export shared path utilities from @quartz-community/utils
 export {
   isFilePath,
@@ -35,6 +38,43 @@ export type {
 // --- v5-specific exports below ---
 
 export const QUARTZ = "quartz"
+
+function getDirName(p: string): string {
+  const normalized = p.replace(/\\/g, "/")
+  const idx = normalized.lastIndexOf("/")
+  return idx === -1 ? "." : normalized.slice(0, idx)
+}
+
+function getBaseName(p: string): string {
+  const normalized = p.replace(/\\/g, "/")
+  const idx = normalized.lastIndexOf("/")
+  return (idx === -1 ? normalized : normalized.slice(idx + 1)).toLowerCase()
+}
+
+/**
+ * Resolves the destination FullSlug for an input markdown file.
+ * Dynamic Homepage Resolution Rule:
+ * 1. If a directory contains `index.md`, it becomes `<dir>/index` (or `index` at root).
+ *    Any `README.md` in that directory remains `<dir>/readme` (or `readme`).
+ * 2. If a directory DOES NOT contain `index.md` but DOES contain `README.md` (and is not ignored),
+ *    `README.md` is dynamically promoted to `<dir>/index` (or `index` at root) as the home page.
+ */
+export function resolveFileSlug(relativePath: string, allFiles: string[] = []): FullSlug {
+  const dir = getDirName(relativePath)
+  const base = getBaseName(relativePath)
+
+  if (base === "readme.md") {
+    const hasIndexInDir = allFiles.some((f) => {
+      return getDirName(f) === dir && getBaseName(f) === "index.md"
+    })
+
+    if (!hasIndexInDir) {
+      return (dir === "." ? "index" : `${dir}/index`) as FullSlug
+    }
+  }
+
+  return slugifyFilePath(relativePath as FilePath)
+}
 
 // from micromorph/src/utils.ts
 // https://github.com/natemoo-re/micromorph/blob/main/src/utils.ts#L5

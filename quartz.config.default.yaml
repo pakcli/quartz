@@ -6,6 +6,11 @@ configuration:
   enablePopovers: true
   enableChemistryGraph: true
   enablePaperCard: false # options: true | false (optional elevated paper card with drop shadow and rounded corners)
+  enableShareActions: false # options: true | false (multi-scope share, copy markdown, and A4 PDF print toolbar)
+  shareActionsStyle: icon # options: "icon" | "text" | "both" (default: "icon")
+  shareActionsOnIndex: true # options: true | false (default: true, all pages printable)
+  notFoundStyle: pathtextbox # options: "default" | "pathtextbox"
+  logo: "" # optional custom logo URL/path for 404 page and branding
   displayMode: both # options: "both" | "darkOnly" | "lightOnly"
   themePreset: default # options: "default" | "emerald-science" | "cyber-matrix" | "ocean-blue" | "academic-paper" | "sunset-amber"
   analytics:

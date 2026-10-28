@@ -141,6 +141,32 @@ export const THEME_PRESETS: Record<string, PresetPalette> = {
       textHighlight: "#ea580c66",
     },
   },
+  "athletic-crimson-azure": {
+    name: "Athletic Crimson Azure",
+    description: "High-energy crimson red and cobalt azure palette for sports, athletics, and tactical playbooks.",
+    lightMode: {
+      light: "#fcfbfa",
+      lightgray: "#e2e8f0",
+      gray: "#94a3b8",
+      darkgray: "#334155",
+      dark: "#0f172a",
+      secondary: "#dc2626",
+      tertiary: "#2563eb",
+      highlight: "rgba(220, 38, 38, 0.12)",
+      textHighlight: "#fef08a88",
+    },
+    darkMode: {
+      light: "#0f141c",
+      lightgray: "#1e293b",
+      gray: "#64748b",
+      darkgray: "#cbd5e1",
+      dark: "#f8fafc",
+      secondary: "#ef4444",
+      tertiary: "#3b82f6",
+      highlight: "rgba(239, 68, 68, 0.16)",
+      textHighlight: "#fbbf2444",
+    },
+  },
 }
 
 /**

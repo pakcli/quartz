@@ -1,6 +1,7 @@
 import { render } from "preact-render-to-string"
 import { QuartzComponent, QuartzComponentProps } from "./types"
 import BodyConstructor from "./Body"
+import ShareActionsConstructor from "./ShareActions"
 import {
   CSSResource,
   JSResource,
@@ -297,6 +298,24 @@ export function renderTranscludes(
   walk(root)
 }
 
+function getHastNodeText(node: unknown): string {
+  if (!node || typeof node !== "object") return ""
+  const n = node as Record<string, unknown>
+  if (n.type === "text" && typeof n.value === "string") return n.value
+  if (Array.isArray(n.children)) {
+    return (n.children as unknown[])
+      .filter((child) => {
+        if (!child || typeof child !== "object") return true
+        const c = child as Record<string, unknown>
+        const props = (c.properties ?? {}) as Record<string, unknown>
+        return !(c.tagName === "a" && props.role === "anchor")
+      })
+      .map(getHastNodeText)
+      .join("")
+  }
+  return ""
+}
+
 export function renderPage(
   cfg: GlobalConfiguration,
   slug: FullSlug,
@@ -310,6 +329,26 @@ export function renderPage(
   const root = clone(componentData.tree) as Root
   const visited = new Set<FullSlug>([slug])
   renderTranscludes(root, cfg, slug, componentData, visited)
+
+  // Suppress repetitive duplication if title text == first line heading exact case
+  const pageTitleText = (componentData.fileData.frontmatter?.title ?? componentData.fileData.title) as string | undefined
+  if (typeof pageTitleText === "string" && pageTitleText.trim() !== "") {
+    const expected = pageTitleText.trim()
+    const children = root.children as unknown[]
+    if (Array.isArray(children)) {
+      const firstHeadingIdx = children.findIndex((node) => {
+        if (!node || typeof node !== "object") return false
+        const tag = (node as Record<string, unknown>).tagName
+        return tag === "h1" || tag === "h2"
+      })
+      if (firstHeadingIdx !== -1) {
+        const headingText = getHastNodeText(children[firstHeadingIdx]).trim()
+        if (headingText === expected) {
+          children.splice(firstHeadingIdx, 1)
+        }
+      }
+    }
+  }
 
   // Run plugin-provided tree transforms (e.g. resolving inline bases codeblocks)
   if (treeTransforms) {
@@ -333,6 +372,7 @@ export function renderPage(
     frame: frameName,
   } = components
   const Body = BodyConstructor()
+  const ShareActions = ShareActionsConstructor()
   const frame = resolveFrame(frameName)
 
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
@@ -350,6 +390,7 @@ export function renderPage(
         data-slug={slug}
         data-basepath={basePath}
         data-paper={cfg.enablePaperCard || componentData.fileData.frontmatter?.paper ? "true" : undefined}
+        data-printable={componentData.fileData.frontmatter?.printable === false || componentData.fileData.frontmatter?.print === false ? "false" : undefined}
         data-chem-title={componentData.fileData.frontmatter?.title ? String(componentData.fileData.frontmatter.title) : undefined}
         data-chem-color={componentData.fileData.frontmatter?.color ? String(componentData.fileData.frontmatter.color) : undefined}
         data-chem-category={componentData.fileData.frontmatter?.category ? String(componentData.fileData.frontmatter.category) : undefined}
@@ -362,6 +403,7 @@ export function renderPage(
       >
         {frame.css && <style dangerouslySetInnerHTML={{ __html: frame.css }} />}
         <div id="quartz-root" class="page" data-frame={frame.name}>
+          {cfg.enableShareActions && <ShareActions {...componentData} cfg={cfg} />}
           <Body {...componentData}>
             {[
               frame.render({

@@ -73,7 +73,7 @@ export interface GlobalConfiguration {
   baseUrl?: string
   theme: Theme
   /**
-   * Predefined Theme Preset (e.g. "emerald-science", "cyber-matrix", "ocean-blue", "academic-paper", "sunset-amber", "default").
+   * Predefined Theme Preset (e.g. "emerald-science", "athletic-crimson-azure", "cyber-matrix", "ocean-blue", "academic-paper", "sunset-amber", "default").
    * Gracefully falls back to default theme if empty or omitted.
    */
   themePreset?: string
@@ -92,6 +92,32 @@ export interface GlobalConfiguration {
    * Whether to enable elevated paper card styling for content articles (drop shadow, rounded corners, canvas backdrop)
    */
   enablePaperCard?: boolean
+  /**
+   * Whether to enable multi-scope share, export & print action bar (desktop top-right & mobile sticky bottom)
+   */
+  enableShareActions?: boolean
+  /**
+   * Display style for desktop share action buttons:
+   * - "icon": Icon only (compact, default)
+   * - "text": Text label only
+   * - "both": Icon and text label
+   */
+  shareActionsStyle?: "icon" | "text" | "both"
+  /**
+   * Whether share, export & print action bar is enabled on the mainmenu / index page.
+   * Defaults to true (all pages printable by default). Can be set to false to disable on index.
+   */
+  shareActionsOnIndex?: boolean
+  /**
+   * 404 Error Page presentation style:
+   * - "default": Standard default Quartz 404 (minimal popover-hint with simple 404 heading, text, and link)
+   * - "pathtextbox" / "pathtexbox": Modern branded 404 page featuring centered logo, "404: Not found", dynamic URL path textbox, search dialog trigger button, and return home navigation
+   */
+  notFoundStyle?: "default" | "pathtextbox" | "pathtexbox"
+  /**
+   * Optional custom logo URL or path for 404 error page and header
+   */
+  logo?: string
   /**
    * Allow to translate the date in the language of your choice.
    * Also used for UI translation (default: en-US)
