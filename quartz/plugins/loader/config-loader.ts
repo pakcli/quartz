@@ -31,6 +31,7 @@ import Flex from "../../components/Flex"
 import MobileOnly from "../../components/MobileOnly"
 import DesktopOnly from "../../components/DesktopOnly"
 import ConditionalRender from "../../components/ConditionalRender"
+import { resolveThemePreset } from "../../util/presets"
 
 const CONFIG_YAML_PATH = path.join(process.cwd(), "quartz.config.yaml")
 const DEFAULT_CONFIG_YAML_PATH = path.join(process.cwd(), "quartz.config.default.yaml")
@@ -38,6 +39,24 @@ const LEGACY_PLUGINS_JSON_PATH = path.join(process.cwd(), "quartz.plugins.json")
 const LEGACY_DEFAULT_PLUGINS_JSON_PATH = path.join(process.cwd(), "quartz.plugins.default.json")
 
 function resolveConfigPath(): string {
+  // 1. Explicit env var override
+  if (process.env.QUARTZ_CONFIG && fs.existsSync(process.env.QUARTZ_CONFIG)) {
+    return process.env.QUARTZ_CONFIG
+  }
+
+  // 2. Discover configuration in satellite vault passed via -d or --directory
+  for (let i = 0; i < process.argv.length; i++) {
+    const arg = process.argv[i]
+    if ((arg === "-d" || arg === "--directory") && process.argv[i + 1]) {
+      const vaultDir = path.resolve(process.cwd(), process.argv[i + 1])
+      const ghConfig = path.join(vaultDir, ".github", "quartz.config.yaml")
+      if (fs.existsSync(ghConfig)) return ghConfig
+      const rootConfig = path.join(vaultDir, "quartz.config.yaml")
+      if (fs.existsSync(rootConfig)) return rootConfig
+    }
+  }
+
+  // 3. Fallback to current engine directory configs
   if (fs.existsSync(CONFIG_YAML_PATH)) return CONFIG_YAML_PATH
   if (fs.existsSync(LEGACY_PLUGINS_JSON_PATH)) return LEGACY_PLUGINS_JSON_PATH
   if (fs.existsSync(DEFAULT_CONFIG_YAML_PATH)) return DEFAULT_CONFIG_YAML_PATH
@@ -261,19 +280,30 @@ export async function loadQuartzConfig(
     ...configOverrides,
   }
 
-  // Dynamic build-time theme string resolution (compatible with quartz.config.yaml & CI env)
-  const envTheme = process.env.QUARTZ_THEME
-  if (envTheme && configuration.theme?.colors) {
-    if (envTheme === "cyber-matrix") {
-      configuration.theme.colors.lightMode = { ...configuration.theme.colors.lightMode, secondary: "#00cc55", tertiary: "#009944" }
-      configuration.theme.colors.darkMode = { ...configuration.theme.colors.darkMode, secondary: "#00ff66", tertiary: "#00cc55" }
-    } else if (envTheme === "ocean-blue") {
-      configuration.theme.colors.lightMode = { ...configuration.theme.colors.lightMode, secondary: "#0284c7", tertiary: "#38bdf8" }
-      configuration.theme.colors.darkMode = { ...configuration.theme.colors.darkMode, secondary: "#38bdf8", tertiary: "#0284c7" }
-    } else if (envTheme === "emerald-science") {
-      configuration.theme.colors.lightMode = { ...configuration.theme.colors.lightMode, secondary: "#059669", tertiary: "#10b981" }
-      configuration.theme.colors.darkMode = { ...configuration.theme.colors.darkMode, secondary: "#10b981", tertiary: "#059669" }
+  // Dynamic Theme Preset resolution from YAML configuration or environment variable
+  const selectedPreset =
+    (configuration as any).themePreset ||
+    process.env.QUARTZ_THEME
+  const preset = resolveThemePreset(selectedPreset)
+
+  if (preset && configuration.theme?.colors) {
+    configuration.theme.colors.lightMode = {
+      ...configuration.theme.colors.lightMode,
+      ...preset.lightMode,
     }
+    configuration.theme.colors.darkMode = {
+      ...configuration.theme.colors.darkMode,
+      ...preset.darkMode,
+    }
+    console.log(
+      styleText("green", "✓") +
+        ` Theme preset applied: ${styleText("bold", preset.name)} (${selectedPreset})`,
+    )
+  } else if (selectedPreset && selectedPreset !== "default" && selectedPreset !== "quartz") {
+    console.warn(
+      styleText("yellow", "⚠") +
+        ` Unknown theme preset "${selectedPreset}". Falling back to default Quartz theme.`,
+    )
   }
 
   const enabledEntries = json.plugins.filter((e) => e.enabled)

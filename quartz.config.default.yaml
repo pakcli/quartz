@@ -4,6 +4,10 @@ configuration:
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
+  enableChemistryGraph: true
+  enablePaperCard: false # options: true | false (optional elevated paper card with drop shadow and rounded corners)
+  displayMode: both # options: "both" | "darkOnly" | "lightOnly"
+  themePreset: default # options: "default" | "emerald-science" | "cyber-matrix" | "ocean-blue" | "academic-paper" | "sunset-amber"
   analytics:
     provider: plausible
   locale: en-US
@@ -41,6 +45,9 @@ configuration:
         highlight: rgba(143, 159, 169, 0.15)
         textHighlight: "#b3aa0288"
 plugins:
+  - source: "@quartz-community/note-properties"
+    enabled: true
+    order: 1
   - source: "@quartz-community/created-modified-date"
     enabled: true
     options:

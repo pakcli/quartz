@@ -92,8 +92,29 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.css.push(popoverStyle)
   }
 
-  // chemistry & orbital diagram client script
-  componentResources.afterDOMLoaded.push(chemistryGraphScript)
+  // chemistry & orbital diagram client script (declaratively enabled via enableChemistryGraph)
+  if (cfg.enableChemistryGraph !== false) {
+    componentResources.afterDOMLoaded.push(chemistryGraphScript)
+  }
+
+  // displayMode enforcement (darkOnly / lightOnly / both)
+  if (cfg.displayMode === "darkOnly") {
+    componentResources.beforeDOMLoaded.push(`
+      document.documentElement.setAttribute('saved-theme', 'dark');
+      try { localStorage.setItem('theme', 'dark'); } catch (_) {}
+    `)
+    componentResources.css.push(`
+      .darkmode, [data-theme-toggle], .theme-toggle { display: none !important; }
+    `)
+  } else if (cfg.displayMode === "lightOnly") {
+    componentResources.beforeDOMLoaded.push(`
+      document.documentElement.setAttribute('saved-theme', 'light');
+      try { localStorage.setItem('theme', 'light'); } catch (_) {}
+    `)
+    componentResources.css.push(`
+      .darkmode, [data-theme-toggle], .theme-toggle { display: none !important; }
+    `)
+  }
 
   if (cfg.analytics?.provider === "google") {
     const tagId = cfg.analytics.tagId

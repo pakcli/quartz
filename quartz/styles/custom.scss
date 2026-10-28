@@ -1,225 +1,694 @@
 @use "./variables.scss" as *;
 
 // ==============================================================================
-// ⚛️ QUARTZ V5 DUAL-MODE CHEMISTRY & ORBITAL GRAPH STYLES
+// 🧪 QUARTZ V5 DUAL-MODE CHEMINFORMATICS & MOLECULE GRAPH STYLES
 // ==============================================================================
 
-.chemistry-widget-container {
-  margin: 1.5rem 0 2rem 0;
-  padding: 1.25rem;
-  background: var(--lightgray);
-  border: 1px solid var(--gray);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transition: all 0.25s ease;
-
-  .chem-widget-header {
+.graph {
+  .graph-header {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--gray);
-    margin-bottom: 1rem;
+    margin-bottom: 0.35rem;
 
-    .chem-widget-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      .chem-badge {
-        font-size: 0.75rem;
-        font-family: var(--codeFont);
-        font-weight: 700;
-        padding: 0.2rem 0.5rem;
-        background: var(--secondary);
-        color: var(--light);
-        border-radius: 6px;
-      }
-
-      .chem-label {
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: var(--dark);
-      }
+    h3 {
+      font-size: 1rem;
+      margin: 0;
+      color: var(--dark);
     }
 
-    .chem-toggle-group {
-      display: flex;
-      background: var(--light);
-      padding: 0.25rem;
-      border-radius: 8px;
-      border: 1px solid var(--gray);
-      gap: 0.25rem;
+    .graph-view-toggle {
+      display: inline-flex;
+      background: var(--lightgray);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
 
-      .chem-toggle-btn {
+      .graph-toggle-tab {
         background: transparent;
         border: none;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.8rem;
-        font-weight: 600;
         cursor: pointer;
-        border-radius: 6px;
+        font-size: 0.72rem;
+        font-family: var(--bodyFont);
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
         color: var(--darkgray);
-        transition: all 0.2s ease;
+        transition: background 0.2s ease, color 0.2s ease;
+        transform: none !important;
+
+        &:active {
+          transform: none !important;
+        }
 
         &:hover {
-          color: var(--secondary);
+          color: var(--dark);
         }
 
         &.active {
           background: var(--secondary);
           color: var(--light);
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
         }
       }
     }
   }
 
-  .chem-widget-body {
-    .chem-view-ilmiah,
-    .chem-view-konteks {
+  .graph-outer {
+    position: relative;
+
+    .global-graph-icon {
+      z-index: 3;
+    }
+
+    .graph-molecule-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      background: var(--light);
       display: none;
-
-      &.active {
-        display: block;
-        animation: chem-fadein 0.3s ease;
-      }
-    }
-  }
-
-  // Orbital Diagram Styles
-  .chem-orbital-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
-    gap: 1.5rem;
-
-    .chem-orbital-svg {
-      max-width: 100%;
-      height: auto;
-      filter: drop-shadow(0 0 12px rgba(45, 212, 191, 0.2));
-
-      .chem-orbit-ring {
-        fill: none;
-        stroke: var(--gray);
-        stroke-width: 1.25;
-        stroke-dasharray: 4, 3;
-        opacity: 0.85;
-      }
-
-      .chem-shell-label {
-        font-size: 10px;
-        fill: var(--darkgray);
-        font-family: var(--codeFont);
-      }
-
-      .chem-nucleus {
-        filter: drop-shadow(0 0 8px currentColor);
-      }
-
-      .chem-nucleus-text {
-        font-size: 15px;
-        font-weight: bold;
-        fill: #ffffff;
-        text-anchor: middle;
-        font-family: var(--headerFont);
-      }
-    }
-
-    .chem-meta-panel {
-      display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      background: var(--light);
-      padding: 1rem 1.25rem;
-      border-radius: 8px;
-      border: 1px solid var(--gray);
-      min-width: 220px;
+      box-sizing: border-box;
+      overflow: hidden;
+      border-radius: 4px;
 
-      .chem-meta-item {
-        font-size: 0.85rem;
+      .chem-molecule-card {
         display: flex;
-        justify-content: space-between;
-        gap: 1rem;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        position: relative;
 
-        span {
-          color: var(--darkgray);
-        }
+        .chem-molecule-viewport {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.5rem;
+          box-sizing: border-box;
 
-        strong {
-          color: var(--dark);
-          font-family: var(--codeFont);
+          .chem-structure-svg {
+            max-width: 100%;
+            max-height: 200px;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+
+            .chem-atom-text {
+              fill: #ffffff !important;
+              color: #ffffff !important;
+              font-weight: 800 !important;
+              font-size: 15px !important;
+              font-family: var(--headerFont), system-ui, -apple-system, sans-serif !important;
+              text-anchor: middle !important;
+              dominant-baseline: central !important;
+              filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)) !important;
+            }
+
+            .chem-angle-text {
+              fill: var(--dark) !important;
+              font-size: 10px !important;
+              font-weight: 700 !important;
+              font-family: var(--codeFont), monospace !important;
+              text-anchor: middle !important;
+              dominant-baseline: central !important;
+            }
+
+            .chem-angle-arc {
+              stroke: var(--darkgray) !important;
+              stroke-width: 1.5 !important;
+            }
+          }
         }
       }
     }
-  }
 
-  // Context Network Cards
-  .chem-context-network {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 1rem 0;
-
-    .chem-context-card {
+    .graph-aufbau-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
       background: var(--light);
-      padding: 0.85rem 1rem;
-      border-radius: 8px;
-      border: 1px solid var(--gray);
-      max-width: 200px;
-      text-align: center;
+      display: none;
+      flex-direction: column;
+      box-sizing: border-box;
+      overflow: hidden;
+      border-radius: 4px;
 
-      .chem-context-badge {
-        font-size: 0.65rem;
+      .aufbau-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        .aufbau-viewport {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.2rem 0.35rem;
+          box-sizing: border-box;
+          position: relative;
+
+          .aufbau-cp-floating-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-family: var(--codeFont), monospace;
+            font-size: 0.66rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.08);
+            color: var(--darkgray);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            pointer-events: none;
+            user-select: none;
+            backdrop-filter: blur(4px);
+            z-index: 5;
+          }
+
+          .aufbau-diagram-svg {
+            max-width: 100%;
+            max-height: 250px;
+            width: 100%;
+            height: 100%;
+
+            .aufbau-col-title, .aufbau-row-title {
+              font-family: var(--codeFont), monospace;
+              font-size: 11.5px;
+              font-weight: 700;
+              fill: var(--darkgray);
+            }
+
+            .aufbau-col-sub {
+              font-family: var(--codeFont), monospace;
+              font-size: 11px;
+              font-weight: 800;
+              fill: var(--dark);
+            }
+
+            .aufbau-energy-text {
+              font-family: var(--headerFont), system-ui, sans-serif;
+              font-size: 14px;
+              font-weight: 900;
+              letter-spacing: 3px;
+              fill: #ef4444 !important;
+              text-transform: uppercase;
+              filter: drop-shadow(0 1px 2px rgba(239, 68, 68, 0.35));
+            }
+
+            .aufbau-diag-line {
+              stroke-width: 18px !important;
+              stroke-linecap: round !important;
+              transition: opacity 0.2s ease;
+
+              &.dim {
+                opacity: 0 !important;
+                stroke-dasharray: none !important;
+                stroke-dashoffset: 0 !important;
+              }
+
+              &.active {
+                opacity: 1;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.22));
+              }
+            }
+
+            .aufbau-upward-line {
+              stroke-width: 13px !important;
+              stroke-linecap: round !important;
+              stroke-linejoin: round !important;
+              fill: none !important;
+              opacity: 0;
+              transition: opacity 0.3s ease;
+
+              &.dim {
+                opacity: 0 !important;
+              }
+
+              &.active {
+                opacity: 0.38 !important;
+                filter: saturate(0.65) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+              }
+            }
+
+            .aufbau-node-group {
+              cursor: pointer;
+            }
+
+            .aufbau-orb-node {
+              transition: fill 0.2s ease, stroke 0.2s ease;
+
+              &.dim {
+                fill: var(--light);
+                stroke: rgba(148, 163, 184, 0.45);
+              }
+
+              &.active {
+                filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.25));
+              }
+            }
+
+            .aufbau-orb-text {
+              font-family: var(--headerFont), system-ui, -apple-system, sans-serif;
+              dominant-baseline: central;
+              font-weight: 800;
+              font-size: 13.5px;
+              letter-spacing: -0.2px;
+
+              &.active {
+                fill: #ffffff !important;
+                filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+              }
+
+              &.dim {
+                fill: var(--darkgray);
+                opacity: 0.8;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Dedicated HUD spawned BELOW graph frame (never overlapping or covering content)
+  .graph-hud-footer {
+    margin-top: 0.45rem;
+    display: none;
+
+    .graph-hud-card {
+      background: var(--lightgray);
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      user-select: none;
+
+      .graph-hud-title {
+        font-family: var(--headerFont);
         font-weight: 700;
+        font-size: 0.78rem;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        min-width: 0;
+
+        .graph-hud-name {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+
+        .aufbau-ctrl-group {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          flex: 0 0 auto;
+
+          .aufbau-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            padding: 0;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            user-select: none;
+            color: var(--dark);
+            transform: none !important;
+
+            &:active {
+              transform: none !important;
+            }
+
+            &:hover {
+              background: var(--secondary);
+              color: var(--light);
+              border-color: var(--secondary);
+            }
+
+            &.playing {
+              background: #f59e0b;
+              color: #ffffff;
+              border-color: #d97706;
+            }
+
+            &.active-loop {
+              background: #10b981;
+              color: #ffffff;
+              border-color: #059669;
+              box-shadow: 0 0 6px rgba(16, 185, 129, 0.45);
+            }
+
+            .aufbau-btn-icon {
+              font-size: 0.7rem;
+              line-height: 1;
+              display: block;
+            }
+          }
+        }
+
+        .graph-hud-badge {
+          font-size: 0.68rem;
+          font-family: var(--codeFont);
+          color: var(--light);
+          padding: 1px 6px;
+          border-radius: 4px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+      }
+
+      &.aufbau-hud-card {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 7px 10px;
+
+        .aufbau-hud-row {
+          display: flex;
+          align-items: center;
+          width: 100%;
+        }
+
+        .aufbau-hud-row-1 {
+          justify-content: space-between;
+          gap: 8px;
+
+          .graph-hud-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1 1 auto;
+          }
+
+          .aufbau-ctrl-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            flex: 0 0 auto;
+          }
+        }
+
+        .aufbau-hud-row-2 {
+          justify-content: space-between;
+          gap: 6px;
+          font-family: var(--codeFont);
+          font-size: 0.72rem;
+
+          .graph-hud-badge {
+            font-size: 0.68rem;
+            font-family: var(--codeFont);
+            color: #ffffff;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            white-space: nowrap;
+          }
+
+          .aufbau-e-counter {
+            font-family: var(--codeFont), monospace;
+            font-size: 0.72rem;
+            color: var(--dark);
+            white-space: nowrap;
+          }
+
+          .aufbau-active-orbital {
+            font-family: var(--codeFont), monospace;
+            font-size: 0.72rem;
+            color: var(--dark);
+            white-space: nowrap;
+
+            code {
+              font-family: var(--codeFont);
+              background: rgba(0, 0, 0, 0.06);
+              padding: 1px 5px;
+              border-radius: 3px;
+              font-weight: 700;
+            }
+          }
+        }
+
+        .aufbau-hud-row-3 {
+          width: 100%;
+
+          .aufbau-config-code {
+            font-family: var(--codeFont), monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+            box-sizing: border-box;
+
+            .aufbau-config-line {
+              display: block;
+              white-space: nowrap;
+              line-height: 1.35;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+:root[saved-theme="dark"] .graph {
+  .graph-hud-footer .graph-hud-card {
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+
+    .graph-hud-title {
+      color: #f1f5f9;
+
+      .aufbau-ctrl-group .aufbau-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: #f1f5f9;
+
+        &:hover {
+          background: var(--secondary);
+          color: #ffffff;
+          border-color: var(--secondary);
+        }
+
+        &.playing {
+          background: #d97706;
+          color: #ffffff;
+          border-color: #b45309;
+        }
+
+        &.active-loop {
+          background: #059669;
+          color: #ffffff;
+          border-color: #047857;
+          box-shadow: 0 0 6px rgba(5, 150, 105, 0.45);
+        }
+      }
+    }
+
+    &.aufbau-hud-card {
+      .aufbau-hud-row-1 .graph-hud-name {
+        color: #f1f5f9;
+      }
+
+      .aufbau-hud-row-2 {
+        .aufbau-e-counter {
+          color: #f1f5f9;
+        }
+
+        .aufbau-active-orbital {
+          color: #f1f5f9;
+
+          code {
+            background: #1e293b;
+            color: #38bdf8;
+          }
+        }
+      }
+
+      .aufbau-hud-row-3 .aufbau-config-code {
+        background: #1e293b;
+        color: #38bdf8;
+      }
+    }
+  }
+
+  .graph-outer {
+    .graph-aufbau-container {
+      background: var(--light);
+
+      .aufbau-viewport .aufbau-cp-floating-badge {
+        background: rgba(15, 23, 42, 0.78);
+        color: #94a3b8;
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .aufbau-diagram-svg {
+        .aufbau-energy-text {
+          fill: #f87171 !important;
+          filter: drop-shadow(0 0 6px rgba(248, 113, 113, 0.5));
+        }
+
+        .aufbau-col-title, .aufbau-row-title {
+          fill: #94a3b8 !important;
+        }
+
+        .aufbau-col-sub {
+          fill: #f1f5f9 !important;
+        }
+
+        .aufbau-orb-node.dim {
+          fill: #1e293b !important;
+          stroke: rgba(148, 163, 184, 0.3) !important;
+        }
+
+        .aufbau-orb-text.dim {
+          fill: #94a3b8 !important;
+          opacity: 0.9;
+        }
+      }
+    }
+
+    .graph-molecule-container {
+      background: var(--light);
+
+      .chem-molecule-viewport .chem-structure-svg {
+        .chem-angle-text {
+          fill: #f1f5f9 !important;
+        }
+
+        .chem-angle-arc {
+          stroke: #94a3b8 !important;
+        }
+
+        rect {
+          fill: #1e293b !important;
+        }
+      }
+    }
+  }
+}
+
+// ==============================================================================
+// 📄 OPTIONAL PAPER ELEVATION & CHEMISTRY DESK CANVAS
+// (Configurable via `enablePaperCard: true` in quartz.config.yaml or frontmatter `paper: true`)
+// ==============================================================================
+
+body[data-paper="true"] {
+  background-color: #f1f5f9;
+  min-height: 100vh;
+
+  #quartz-root.page {
+    background-color: var(--light);
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.05),
+      0 10px 25px -5px rgba(0, 0, 0, 0.08),
+      0 20px 48px -8px rgba(0, 0, 0, 0.04);
+    margin: 1.5rem auto;
+    padding: 1.25rem 2rem;
+    box-sizing: border-box;
+    min-height: calc(100vh - 3rem);
+    transition: box-shadow 0.25s ease, background-color 0.25s ease;
+
+    @media all and ($mobile) {
+      margin: 0;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      min-height: 100vh;
+    }
+  }
+
+  .center > article {
+    background-color: transparent;
+  }
+}
+
+// ==============================================================================
+// 🧭 HEADER & SIDEBAR NAVIGATION ALIGNMENT
+// ==============================================================================
+
+.page-header {
+  margin-bottom: 0.75rem;
+
+  .breadcrumb-container {
+    margin-top: 0;
+    margin-bottom: 0.35rem;
+    font-size: 0.82rem;
+  }
+
+  .article-title {
+    margin: 0.25rem 0 0.65rem 0;
+    font-size: 1.85rem;
+    font-weight: 700;
+  }
+
+  .note-properties {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+// Suppress redundant first markdown H1 when article-title is rendered above note-properties
+.page-header:has(.article-title) + article > .markdown-preview-view > h1:first-child,
+.page-header:has(.article-title) + article > h1:first-child {
+  display: none;
+}
+
+// Left sidebar site title/logo above explorer toggle
+.left.sidebar {
+  .page-title {
+    margin: 0 0 0.85rem 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+
+    a {
+      color: var(--dark);
+      text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover {
         color: var(--secondary);
-        font-family: var(--codeFont);
-        margin-bottom: 0.25rem;
       }
-
-      h4 {
-        margin: 0.25rem 0;
-        font-size: 0.95rem;
-      }
-
-      p {
-        margin: 0;
-        font-size: 0.75rem;
-        color: var(--darkgray);
-      }
-    }
-
-    .chem-context-arrow {
-      color: var(--secondary);
-      font-weight: bold;
-      font-size: 0.9rem;
     }
   }
 }
 
-@keyframes chem-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-}
+:root[saved-theme="dark"] body[data-paper="true"] {
+  background-color: #0b0f19;
 
-@keyframes chem-fadein {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  #quartz-root.page {
+    background-color: var(--light);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      0 14px 36px -4px rgba(0, 0, 0, 0.65);
   }
 }

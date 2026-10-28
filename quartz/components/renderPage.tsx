@@ -346,7 +346,20 @@ export function renderPage(
   const doc = (
     <html lang={lang} dir={direction}>
       <Head {...componentData} />
-      <body data-slug={slug} data-basepath={basePath}>
+      <body
+        data-slug={slug}
+        data-basepath={basePath}
+        data-paper={cfg.enablePaperCard || componentData.fileData.frontmatter?.paper ? "true" : undefined}
+        data-chem-title={componentData.fileData.frontmatter?.title ? String(componentData.fileData.frontmatter.title) : undefined}
+        data-chem-color={componentData.fileData.frontmatter?.color ? String(componentData.fileData.frontmatter.color) : undefined}
+        data-chem-category={componentData.fileData.frontmatter?.category ? String(componentData.fileData.frontmatter.category) : undefined}
+        data-chem-smiles={componentData.fileData.frontmatter?.smiles ? String(componentData.fileData.frontmatter.smiles) : undefined}
+        data-chem-formula={componentData.fileData.frontmatter?.formula ? String(componentData.fileData.frontmatter.formula) : undefined}
+        data-chem-symbol={componentData.fileData.frontmatter?.symbol ? String(componentData.fileData.frontmatter.symbol) : undefined}
+        data-chem-z={componentData.fileData.frontmatter?.atomic_number ? String(componentData.fileData.frontmatter.atomic_number) : (componentData.fileData.frontmatter?.z ? String(componentData.fileData.frontmatter.z) : undefined)}
+        data-chem-mw={componentData.fileData.frontmatter?.mw ? String(componentData.fileData.frontmatter.mw) : undefined}
+        data-chem-aliases={componentData.fileData.frontmatter?.aliases ? JSON.stringify(componentData.fileData.frontmatter.aliases) : undefined}
+      >
         {frame.css && <style dangerouslySetInnerHTML={{ __html: frame.css }} />}
         <div id="quartz-root" class="page" data-frame={frame.name}>
           <Body {...componentData}>

@@ -73,6 +73,26 @@ export interface GlobalConfiguration {
   baseUrl?: string
   theme: Theme
   /**
+   * Predefined Theme Preset (e.g. "emerald-science", "cyber-matrix", "ocean-blue", "academic-paper", "sunset-amber", "default").
+   * Gracefully falls back to default theme if empty or omitted.
+   */
+  themePreset?: string
+  /**
+   * Enforced display mode across satellite vault:
+   * - "both": standard light/dark toggle enabled (default)
+   * - "darkOnly": locks application strictly in darkmode
+   * - "lightOnly": locks application strictly in lightmode
+   */
+  displayMode?: "both" | "darkOnly" | "lightOnly"
+  /**
+   * Whether to inject the interactive Bohr orbital and molecular graph explorer
+   */
+  enableChemistryGraph?: boolean
+  /**
+   * Whether to enable elevated paper card styling for content articles (drop shadow, rounded corners, canvas backdrop)
+   */
+  enablePaperCard?: boolean
+  /**
    * Allow to translate the date in the language of your choice.
    * Also used for UI translation (default: en-US)
    * Need to be formatted following BCP 47: https://en.wikipedia.org/wiki/IETF_language_tag
